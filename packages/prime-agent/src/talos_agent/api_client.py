@@ -82,7 +82,10 @@ class TalosAPIClient:
             timeout=30.0,
         )
         self._settings = settings
-        self._response_max_bytes: int = settings.api_client_response_max_bytes
+        max_bytes = getattr(settings, "api_client_response_max_bytes", None)
+        self._response_max_bytes: int = (
+            max_bytes if isinstance(max_bytes, int) and not isinstance(max_bytes, bool) else 1_048_576
+        )
 
     def _request_headers(self, supplied: dict[str, str] | None = None) -> dict[str, str]:
         """Capture one credential for the complete retry lifecycle of a request."""
